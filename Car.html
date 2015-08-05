@@ -1,0 +1,91 @@
+<html>
+	<head>
+		<title> GWC Graphics and Animation Week!
+		</title>
+		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+		<script type="text/processing" data-processing-target="mycanvas">
+		var car=[];
+		//var car;
+		//var scene1;
+		void setup(){
+			
+			size(400,400);
+			background(28, 32, 219);
+			xpos = 450;
+			for(var i=0; i<5;i++){
+				car[i]= new Car([random(0,255),random(0,255),random(0,255)],xpos,360,-2);
+				xpos-= 120;
+			//car= new Car([random(0,255),random(0,255),random(0,255)],290,350,-2);
+			}
+		}
+			
+		void draw(){
+			background(28,32,219);
+			noStroke();
+			for(var i =0; i< car.length; i++){
+				car[i].drawCar();
+				car[i].moveCar();
+	
+		//var scene1 = true;
+		//while (scene1=== true){
+			//var myVar=setInterval(function(){car.drawCar(),move.moveCar},3000);
+			//car.drawCar();
+			//car.moveCar();
+			//background(28,32,219);
+		//background(28,32,219);
+		//car.drawCar();
+		//car.moveCar();
+		
+		}
+		}
+		
+		class Car{
+			var r;
+			var g;
+			var b;
+			var Xpos;
+			var Ypos;
+			var speedX;
+		Car(color,xp,yp,sp){
+			r= color[0];
+			g= color[1];
+			b= color[2];
+			Xpos= xp;
+			Ypos= yp;
+			speedX= sp;
+		}
+		
+		void drawCar(){
+		noStroke();
+		fill(r,g,b);
+		rect(Xpos,Ypos,100,30);
+		arc(Xpos+50,Ypos-7,75,70,180,360);
+		fill(0,0,0);
+		ellipse(Xpos+20,Ypos+30,25,25);
+		ellipse(Xpos+80,Ypos+30,25,25);
+		}
+		
+		void moveCar(){
+		Xpos = Xpos+ speedX;
+		if(Xpos < -130)
+		{
+		  Xpos = 480;
+		}
+		}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+				</script>
+	</head>
+	<body>
+		<canvas id="mycanvas"></canvas>
+	<body onLoad="pageScroll()">
+</html>
