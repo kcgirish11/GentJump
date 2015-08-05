@@ -1,0 +1,127 @@
+<html>
+	<head>
+		<title>TOWNHOUSE</title>
+		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+		<script type="text/processing" data-processing-target="mycanvas">
+		
+		var townhouse;
+		
+		void setup()
+		{
+			size(480,400);
+			background(148, 132, 132);
+			var xPos= 400;
+			var yPos= 0;
+			townhouse = [];
+			for(var i=0; i<5; i++)
+			{
+				townhouse.push(new Townhouse(xPos,yPos,-3,[random(0,255),random(0,255),random(0,255)]));
+				xPos = xPos-120;
+			}
+		}
+		
+		void draw()
+		{  
+			background(148, 132, 132);
+			noStroke();
+			fill (173, 56, 56);
+			for(var i=0; i<townhouse.length; i++)
+			{
+				townhouse[i].drawTownhouse();
+				townhouse[i].moveTownhouse();
+			}
+		}
+		
+		class Townhouse 
+		{
+			var xPosition;
+			var yPosition;
+			var speedX;
+			var r;
+			var g;
+			var b;
+				
+			Townhouse(xPos, yPos, xSpeed,color)
+			{
+				xPosition = xPos;
+				yPosition = yPos;
+				speedX = xSpeed;
+				r= color[0];
+				g= color[1];
+				b= color[2];
+			}
+			
+		void drawTownhouse()
+			{
+				//line(-20, 376, 418, 376);
+				noStroke(); 
+
+				fill (r, g, b);
+				triangle(xPosition+26, yPosition+161, xPosition+147, yPosition+161, xPosition+87, yPosition+137); //triangle
+
+				fill (r, g, b);
+				rect(xPosition+26, yPosition+173, 121, 201); //red building
+
+				fill(145, 181, 181);
+				rect(xPosition+28, yPosition+163, 116, 7); //top
+
+				fill(145, 181, 181);
+				rect(xPosition+36, yPosition+181, 24, 40); //top left window
+
+				fill(145, 181, 181);
+				rect(xPosition+73, yPosition+181, 24, 40); //top middle window
+
+				fill(145, 181, 181);
+				rect(xPosition+110, yPosition+181, 24, 40); //top right window
+
+				fill(145, 181, 181);
+				rect(xPosition+36, yPosition+228, 24, 40); //middle left building
+
+				fill(145, 181, 181);
+				rect(xPosition+73, yPosition+228, 24, 40); //middle middle window
+
+				fill(145, 181, 181);
+				rect(xPosition+110, yPosition+228, 24, 40); // middle right window
+
+				fill(145, 181, 181);
+				rect(xPosition+36, yPosition+275, 24, 40); //bottom left window
+
+				fill(145, 181, 181);
+				rect(xPosition+73, yPosition+275, 24, 40); //bottom middle window
+
+				fill(145, 181, 181);
+				rect(xPosition+110, yPosition+275, 24, 40); //bottom right window
+
+				fill(145, 181, 181);
+				rect(xPosition+36, yPosition+323, 24, 40); //ground left window
+
+				fill(145, 181, 181);
+				rect(xPosition+73, yPosition+323, 24, 40); //ground middle window
+
+				fill(44, 136, 138); 
+				rect(xPosition+108, yPosition+322, 29, 52); //door
+
+				fill(0, 0, 0);
+				ellipse(xPosition+113, yPosition+352, 2, 2); //door knob
+			}
+			
+			void moveTownhouse()
+			{
+				xPosition = xPosition + speedX;
+				
+				if(xPosition < -130)//when the house is off the screen
+				{
+				xPosition=480;//move it to the right of the screen
+				}
+					
+			}
+		}	
+		
+		
+		
+</script>
+	</head>
+	<body>
+		<canvas id="mycanvas"></canvas>
+	</body>
+</html>
