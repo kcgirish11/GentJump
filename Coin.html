@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<title>Coin</title>
+		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+		<script type="text/processing" data-processing-target="mycanvas">
+		
+		var coin;
+		
+		void setup()
+		{
+			size(480,400);
+			var xPos= 0;
+			var yPos= 0;
+			coin = [];
+			for(var i=0; i<2; i++)
+			{
+				coin.push(new Coin(xPos,yPos,-2,[random(0,255),random(0,255),random(0,255)]));
+				xPos = xPos-120;
+			}
+		}
+		
+		void draw()
+		{  
+			background(0, 0, 0);
+			fill (173, 56, 56);
+			for(var i=0; i<coin.length; i++)
+			{
+				coin[i].drawCoin();
+				coin[i].moveCoin();
+			}
+		}
+		
+		class Coin 
+		{
+			var xPosition;
+			var yPosition;
+			var speedX;
+			var r;
+			var g;
+			var b;
+				
+			Coin(xPos, yPos, xSpeed,color)
+			{
+				xPosition = xPos;
+				yPosition = yPos;
+				speedX = xSpeed;
+				r= color[0];
+				g= color[1];
+				b= color[2];
+			}
+			
+		void drawCoin()
+			{
+				//coins
+				stroke(222, 192, 40); //orange border
+				strokeWeight(2); //size of the orange border
+				fill(225, 255, 0);
+				ellipse(xPosition+200,yPosition+200,20,20); //yellow circle
+			}
+			
+			
+			void moveCoin()
+			{
+				xPosition = xPosition + speedX;
+				
+				if(xPosition < 2)//when the house is off the screen
+				{
+				xPosition=480;//move it to the right of the screen
+				}
+					
+			}
+		
+		
+		}
+		
+</script>
+	</head>
+	<body>
+		<canvas id="mycanvas"></canvas>
+	</body>
+</html>
