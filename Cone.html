@@ -1,0 +1,86 @@
+<html>
+	<head>
+		<title>Cone</title>
+		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+		<script type="text/processing" data-processing-target="mycanvas">
+		
+		var cone;
+		
+		void setup()
+		{
+			size(480,400);
+			var xPos= 0;
+			var yPos= 0;
+			cone = [];
+			for(var i=0; i<2; i++)
+			{
+				cone.push(new Cone(xPos,yPos,-2,[random(0,255),random(0,255),random(0,255)]));
+				xPos = xPos-120;
+			}
+		}
+		
+		void draw()
+		{  
+			background(0, 0, 0);
+			fill (173, 56, 56);
+			for(var i=0; i<cone.length; i++)
+			{
+				cone[i].drawCone();
+				cone[i].moveCone();
+			}
+		}
+		
+		class Cone 
+		{
+			var xPosition;
+			var yPosition;
+			var speedX;
+			var r;
+			var g;
+			var b;
+				
+			Cone(xPos, yPos, xSpeed,color)
+			{
+				xPosition = xPos;
+				yPosition = yPos;
+				speedX = xSpeed;
+				r= color[0];
+				g= color[1];
+				b= color[2];
+			}
+			
+		void drawCone()
+			{
+				fill(255, 102, 0);
+				triangle(xPosition+17,yPosition+380,xPosition+58,yPosition+380,xPosition+36,yPosition+335); //cone's triangle
+
+				stroke(232, 202, 111);//
+				strokeWeight(1.6); //yellow line's width
+
+				fill(196, 94, 4);
+				ellipse(xPosition+37,yPosition+384,50,13);//bottom of the cone
+
+				noStroke();
+			}
+			
+			
+			void moveCone()
+			{
+				xPosition = xPosition + speedX;
+				
+				if(xPosition < 2)//when the house is off the screen
+				{
+				xPosition=480;//move it to the right of the screen
+				}
+					
+			}
+		
+		
+		}
+		
+</script>
+	</head>
+	<body>
+		<canvas id="mycanvas"></canvas>
+	</body>
+</html>
