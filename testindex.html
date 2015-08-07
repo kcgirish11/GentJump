@@ -3,7 +3,7 @@
 
 		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
 				<script type="text/processing" data-processing-target="mycanvas">
-			var road, chara;
+			var road, chara, time, income, costOfLiving;
 			var boxes = {};
 			var townhouses = {};
 			var cones = {};
@@ -14,8 +14,10 @@ void setup()
 {
 	size(800,500); 
 	background(0, 102, 153);
+	income = 90; 
+	costOfLiving = 90; 
 	road = new Road(0, 450);
-	chara = new Character(30, 450);
+	chara = new Character(30, 440);
 	var box = 0;
 	for(var i = 0; i < 7; i++)
 	{
@@ -36,10 +38,10 @@ void setup()
 		cone += 180;
 	}
 	var coin = 0; 
-	for(var p = 0; p < coins.length; p++)
+	for(var p = 0; p < 10; p++)
 	{
-		coins.push(new Coin(coin, 400, -2));
-		coin += 50;
+		coins.push(new Coin(coin, 390, -2));
+		coin += random(50,100);
 	}
 	var condo = 0; 
 	for(var m = 0; m < 3; m++)
@@ -47,7 +49,7 @@ void setup()
 		condos.push(new Condo(condo, 165, -3));
 		condo += 300;
 	}
-
+	
 	
 }
 
@@ -78,18 +80,44 @@ void draw()
 		cones[c].drawCone();
 		cones[c].moveCone(); 
 	} 
+	for(var p = 0; p < coins.length;p++)
+	{
+		coins[p].drawCoin(); 
+		coins[p].moveCoin();
+		//chara.coinTouching(coins[p]);
+	}
 	chara.drawCharacter();
+	chara.jump(); 
+	text("Income: " + income, 500, 20, 100, 30); 
+	text("Cost Of Living: " + costOfLiving, 500, 40, 100, 30);
+
+	if(time >= 1000)
+	{
+		time = 0; 
+	}
+	else
+	{
+		time++; 
+	} 
+	if(time % 45 == 1)
+	{
+		costOfLiving += 2; 
+	}
 	
 	
 }
 
+
 class Character 
 {
-	var x, y; 
+	var x, y, jumpState, height, inity;
 	Character(xps, yps)
 	{
 		x = xps; 
-		y = yps; 
+		y = yps;
+		inity = yps; 
+		jumpState = 0; 
+		height = 390; 
 	}
 	
 	void drawCharacter()
@@ -98,9 +126,33 @@ class Character
 		rect(x, y, 50, 50); 
 	}
 	
-	void up()
+	void changeState(var k)
 	{
-		y -= 100; 
+		jumpState = k;
+	}
+	
+	void jump()
+	{
+	println("JUMPING " + jumpState);
+		//jumping
+		if(jumpState == 1 && y >= height)
+		{
+			y -= 70; 
+		} else if (y <= height)
+		{
+			jumpState = 2;
+		}
+		
+		//falling
+		
+		if(jumpState == 2 && y <= height && time% 60 == 1)
+		{
+			y = inity; 
+		}
+		else if (y >= height)
+		{
+			jumpState = 0; 
+		}
 		//println("UP" + y);
 		//this.drawCharacter();
 	}
@@ -272,7 +324,7 @@ class Box
 			}
 		}
 		
-				class Coin 
+	class Coin 
 		{
 			var xPosition;
 			var yPosition;
@@ -291,7 +343,7 @@ class Box
 				stroke(222, 192, 40); //orange border
 				strokeWeight(2); //size of the orange border
 				fill(225, 255, 0);
-				ellipse(xPosition+200,yPosition+200,20,20); //yellow circle
+				ellipse(xPosition,yPosition,20,20); //yellow circle
 			}
 			
 			
@@ -305,7 +357,6 @@ class Box
 				}
 					
 			}
-		
 		
 		}
 		class Condo{
@@ -424,12 +475,15 @@ class Box
 	
 void keyPressed()
 {
-	if(keyCode == 38)
+	if(keyCode == 38)//up key
 	{
-		chara.up();
+		chara.changeState(1);  
+		println("UP PRESSED");
 	}
 
 }
+
+
 		</script>
 	<body>
 			<center><canvas id="mycanvas"></canvas></center> 
