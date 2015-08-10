@@ -1,0 +1,99 @@
+<html>
+	<head>
+		<title> GWC Graphics and Animation Week!
+		</title>
+		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+		<script type="text/processing" data-processing-target="mycanvas">
+		var character=[];
+		void setup(){
+		size(400,400);
+		background(28,32,219);
+		var xPos=60
+		var yPos=450
+		character= new Character(60,450);
+		}
+		void draw(){
+		background(28,32,219);
+		noStroke();
+		character.drawCharacter();
+		}
+		
+		class Character{
+			var xPos;
+			var yPos;
+		Character(xp,yp){
+			xPos=xp;
+			yPos=yp;
+		}
+		
+
+			void drawCharacter(){
+//head
+noStroke();
+fill(179, 118, 43);
+quad(xPos+40,yPos-350,xPos+90,yPos-350,xPos+85,yPos-300,xPos+45,yPos-300);
+//eyes
+stroke(15, 2, 2);
+fill(242, 234, 234);
+//ellipse(115,115,6,10);
+ellipse(xPos+55,yPos-335,6,10);
+//ellipse(135,115,6,10);
+ellipse(xPos+75,yPos-335,6,10);
+//pupils
+fill(5, 0, 0);
+//ellipse(135,117.2,3,3);
+ellipse(xPos+75,yPos-332.8,3,3);
+//ellipse(115,117.2,3,3);
+ellipse(xPos+55,yPos-332.8,3,3);
+//nose
+fill(158, 96, 19);
+//arc(125,127,4,4,-110,130);
+arc(xPos+65,yPos-323,4,4,-110,130);
+//mouth
+//line(120,133,130,133);
+line(xPos+60,yPos-317,xPos+70,yPos-317);
+//torso
+noStroke();
+fill(255, 0, 0);
+//quad(110,140,140,140,145,170,105,170);
+quad(xPos+50,yPos-310,xPos+80,yPos-310,xPos+85,yPos-280,xPos+45,yPos-280);
+//sleeves
+//rect(140,140,10,10);
+rect(xPos+80,yPos-310,10,10);
+//rect(100,140,10,10);
+rect(xPos+40,yPos-310,10,10);
+//shorts
+fill(36, 10, 140);
+//rect(110,170,15,10);
+rect(xPos+50,yPos-280,15,10);
+//rect(127,170,15,10);
+rect(xPos+67,yPos-280,15,10);
+//shoes
+fill(13, 15, 1);
+//ellipse(137,180,20,7);
+ellipse(xPos+77,yPos-270,20,7);
+//ellipse(118,180,20,7);
+ellipse(xPos+58,yPos-270,20,7);
+//arms
+fill(179, 118, 43);
+//rect(150,142,10,6);
+rect(xPos+90,yPos-308,10,6);
+//rect(90,142,10,6);
+rect(xPos+30,yPos-308,10,6);
+//hair
+fill(84, 48, 10);
+//arc(100,121,30,50,90,270);
+arc(xPos+40,yPos-329,10,50,90,270);
+arc(xPos+90,yPos-329,8,50,90,270);
+//rect(100,97,50,10);
+rect(xPos+40,yPos-353,50,10);
+//arc(125,97,50,10,-180,0);
+arc(xPos+65,yPos-353,50,10,-180,0);
+}
+}
+				</script>
+	</head>
+	<body>
+		<canvas id="mycanvas"></canvas>
+	<body onLoad="pageScroll()">
+</html>
