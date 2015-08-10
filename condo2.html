@@ -13,7 +13,7 @@
 			background(28, 32, 219);
 			var xPos = 450;
 			for(var i=0; i<4;i++){
-				condo[i]= new Condo(xPos,100,-2);
+				condo[i]= new Condo(xPos,100,-3.5);
 				xPos-= 180;
 			
 			}
@@ -45,10 +45,10 @@
 			noStroke();
 			fill(204, 194, 194);
 			rect(xPos,yPos,175,300);//building
-			//fill(141, 138, 150);
-			//quad(xPos,yPos,xPos-10,yPos-20,xPos+185,yPos-20,xPos+175,yPos);//roof
-			//stroke(56, 64, 94);
-			//strokeWeight(2);
+			fill(141, 138, 150);
+			quad(xPos,yPos,xPos-10,yPos-20,xPos+185,yPos-20,xPos+175,yPos);//roof
+			stroke(56, 64, 94);
+			strokeWeight(2);
 			fill(119, 137, 156);
 			rect(xPos+20,yPos+20,50,40);//windows
 			rect(xPos+100,yPos+20,50,40);//windows
@@ -56,12 +56,12 @@
 			rect(xPos+100,yPos+80,50,40);//windows
 			rect(xPos+20,yPos+140,50,40);//windows
 			rect(xPos+100,yPos+140,50,40);//windows
-			//stroke(91, 99, 117);
-			//strokeWeight(2);
+			stroke(91, 99, 117);
+			strokeWeight(2);
 			rect(xPos+57.5,yPos+227,30,70);//doors
 			rect(xPos+90.5,yPos+227,30,70);//doors
-			//stroke(92, 173, 94);
-			//strokeWeight(1.75);
+			stroke(92, 173, 94);
+			strokeWeight(1.75);
 			fill(32, 153, 36);
 			ellipse(xPos+30,yPos+285,45,45);//bush
 		}
