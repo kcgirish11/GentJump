@@ -1,58 +1,50 @@
-<html>
-<title> Gent Jump </title>
 
-		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
-		<script src = "buzz-master\src\buzz.js" type = "text/javascript"></script>
+		
 				<script type="text/processing" data-processing-target="mycanvas">
-			var road, chara, time, income, costOfLiving, sceneTime, keyTouch, coinTime, youLost, startGame, gameState, coneTouch; 
+			var road, chara, time, income, costOfLiving, sceneTime, keyTouch, coinTime, youLost; 
+			var boxes = {};
 			var townhouses = {};
 			var cones = {};
 			var condos = {};
-			var coins = {};
-			var fixture = "fixtures/click",
-			formats = [ "ogg", "mp3", "aac", "wav" ];
-			var coinSound = new buzz.sound("coinSound.mp3", {formats : "mp3"});
-	
-	void playCoin(sound)
-	{
-		sound.play(); 
-		println("PLAYED");
-	}
+			var coins = {}; 
 
-	void setup()
+void setup()
 {
 	size(800,500); 
 	background(0, 102, 153);
-	startGame = false; 
 	income = 90; 
-	costOfLiving = 100; 
-	gameState = 0; 
+	costOfLiving = 90; 
 	time = millis();
 	sceneTime = millis();
 	coinTime = millis(); 
 	keyTouch = false; 
 	youLost = false; 
-	coneTouch = false; 
 	road = new Road(0, 450);
-	chara = new Character(60, 410);
+	chara = new Character(60, 440);
+	var box = 0;
+	for(var i = 0; i < 7; i++)
+	{
+		boxes.push(new Box(box, 100, -2));
+		box += 200;
+	}
 	var town = 0; 
 	for(var k = 0; k < 8; k++)
 	{
-		townhouses.push(new Townhouse(town, 75, -3, [random(220,255), random(0,100), random(0, 100)]));
+		townhouses.push(new Townhouse(town, 75, -3, [random(0, 255), random(0,255), random(0, 100)]));
 		town += 121; 
 		
 	}
 	var cone = 0; 
 	for(var l =0; l < 5; l++)
 	{
-		cones.push(new Cone(cone, 480, -2));
+		cones.push(new Cone(cone, 480, -1));
 		cone += 180;
 	}
 	var coin = 0; 
-	for(var p = 0; p < 5; p++)
+	for(var p = 0; p < 10; p++)
 	{
-		coins.push(new Coin(coin, 380, -2));
-		coin += random(100, 200); 
+		coins.push(new Coin(coin, 390, -1));
+		coin += random(50,100);
 	}
 	var condo = 0; 
 	for(var m = 0; m < 3; m++)
@@ -66,146 +58,104 @@
 
 void draw()
 {
-	if(gameState === 0)
+	background(71,145,181);
+	 fill(255,255,0); 
+	ellipse(70,70,50,50);
+	for(var h = 0; h < townhouses.length; h++)
 	{
-		background(71,145,181);
-		var c = createFont("cursive");
-		fill(255,255,255);
-		textFont(c);
-		textSize(80);
-		text("GentJump", 215, 265);
-		textSize(30);
-		text("Click on Genny to START playing!", 170, 340);
-		chara.drawCharacter(); 
+		townhouses[h].drawTownhouse(); 
+		townhouses[h].moveTownhouse();
 	}
-	if(gameState === 1)
+	if(millis() - sceneTime >= 40000)
 	{
-		background(71,145,181);
-		 fill(255,255,0); 
-		ellipse(70,70,50,50);
-		for(var h = 0; h < townhouses.length; h++)
+		for(var i = 0; i < condos.length; i++)
 		{
-			townhouses[h].drawTownhouse(); 
-			townhouses[h].moveTownhouse();
+			condos[i].drawCondo(); 
+			condos[i].moveCondo(); 
 		}
-		if(millis() - sceneTime >= 100000)
+	}
+	road.drawRoad();
+	
+	for(var k = 0; k < boxes.length; k++)
+	{
+		boxes[k].drawBox();
+		boxes[k].moveBox(); 
+	}
+	for(var p = 0; p < coins.length;p++)
+	{
+		coins[p].drawCoin(); 
+		coins[p].moveCoin();
+		if(coins[p].xPosition === (chara.x + 30) && (coins[p].yPosition-20) === chara.y)
 		{
-			for(var i = 0; i < condos.length; i++)
-			{
-				condos[i].drawCondo(); 
-				condos[i].moveCondo(); 
-			}
+			coins.splice(p, 1);
+			income+= 5; 
+			
 		}
-		road.drawRoad();
-		for(var p = 0; p < coins.length;p++)
+	}
+	
+	if(millis() - sceneTime >= 10000)
+	{
+		for(var c = 0; c < cones.length; c++)
 		{
-			coins[p].drawCoin(); 
-			coins[p].moveCoin();
-			if(Math.abs(coins[p].xPosition - chara.xPos <= 2) && (coins[p].yPosition-40) === chara.yPos)
+			cones[c].drawCone();
+			cones[c].moveCone(); 
+			if(cones[c].xPosition === chara.x && (cones[c].yPosition-40) === chara.y)
 			{
-				coins.splice(p, 1);
-				playCoin(coinSound);
-				income+= 4; 
+				income-= 3;
+				//println("CONE");
+				//println(cones.length);
+				//println("CONES  " + cones[c].yPosition);
 				
 			}
-		}
-		
-		if(millis() - sceneTime >= 10000)
-		{
-			for(var c = 0; c < cones.length; c++)
-			{
-				cones[c].drawCone();
-				cones[c].moveCone(); 
-				if(cones[c].xPosition - chara.xPos === 2 && (cones[c].yPosition-70) === chara.yPos)
-				{
-					income -= 3;
-					coneTouch = true;  
-					//println("CONE");
-					//println(cones.length);
-					//println("CONES  " + cones[c].yPosition);
-					
-				}
-			} 
-		}
-		if(coneTouch === true)
-		{
-			chara.drawMinus(); 
-		}
-		chara.drawCharacter();
-		chara.jump(); 
-		//println("Character Yposition  " + chara.y);
-		fill(255,255,255);
-		textFont("monospace", 25);
-		text("Income: " + income, 530, 30); 
-		text("Cost Of Living: " + costOfLiving, 530, 60);
+		} 
+	}
+	chara.drawCharacter();
+	chara.jump(); 
+	//println("Character Yposition  " + chara.y);
+	textFont("monospace", 25);
+	text("Income: " + income, 530, 30); 
+	text("Cost Of Living: " + costOfLiving, 530, 60);
 
-			if(millis() - time >= 2000)
-			{
-				costOfLiving += 3; 
-				if(coneTouch === true)
-				{
-					coneTouch = false;
-				}
-				time = millis(); 
-			}
-			
-			if(millis() - coinTime >= 6000)
-			{
-				coins.push(new Coin(random(800,850), 380, -2));
-				coinTime = millis(); 
-			}
-			if(income <= costOfLiving * (2/3))
-			{
-				///alert("YOUR INCOME DROPPED TOO MIUCH!!!! SORRY you have been DISPLACED!!!!");
-					background(181, 205, 23);
-					var c=createFont("cursive");
-					textFont(c);
-					textSize(55);
-					text("YOU LOST :'(",205,105,400,400);
-					textFont(c);
-					textSize(25);
-					text("You were unable to make",240,250);
-					text("enough money to keep up",240,280);
-					text("with the rising cost of",240,310);
-					text("living and were forced to",240,340);
-					text("leave your neighborhood.",240,370);
-					fill(47, 26, 204);
-					textSize(28);
-					text("Press SPACE to give Genny another chance!",200,440); 
-					chara.drawCharacter(); 
-			}
-				if(income > costOfLiving)
-				{
-					gameState = 2; 
-					
-				}
+		if(millis() - time >= 2000)
+		{
+			costOfLiving += 2; 
+			time = millis(); 
 		}
 		
-		if(gameState === 2)
+		if(millis() - coinTime >= 6000)
 		{
-			background(181, 205, 23);
-			var c= createFont("cursive");
-			textFont(c,55);
-			fill(255,255,255);
-			text("YOU WIN!!", 255, 145); 
-			textFont(c, 20);
-			text("You reached an income greater than the ", 218, 210); 
-			text("cost of living, great job! But, remember to ", 200, 235); 
-			text("stay informed and help your neighbors! ", 218, 260);
-			fill(28, 28, 230);
-			textFont(c, 30);
-			text("Press SPACE to play again!",223, 407);
-			chara.drawCharacter(); 		
+			coins.push(new Coin(random(800,850), 390, -1));
+			coinTime = millis(); 
 		}
+		if(income <= costOfLiving * (2/3))
+		{
+			///alert("YOUR INCOME DROPPED TOO MIUCH!!!! SORRY you have been DISPLACED!!!!");
+			background(0,0,0); 
+			textSize(70);
+			text("YOU LOST", 200, 300); 
+			noLoop(); 
+		}
+		if(income > costOfLiving)
+		{
+			background(255,255,255);
+			fill(0,0,0);
+			textSize(70);
+			text("YOU WON!", 200, 300);
+			noLoop(); 
+		}
+
 }
+
+
+
 
 class Character 
 {
-	var xPos, yPos, jumpState, height, inity, time; 
+	var x, y, jumpState, height, inity, time; 
 	Character(xps, yps)
 	{
-		xPos = xps; 
-		yPos = yps;
+		x = xps; 
+		y = yps;
 		inity = yps; 
 		jumpState = 0; 
 		height = 390; 
@@ -215,76 +165,8 @@ class Character
 	void drawCharacter()
 	{
 		noStroke();
-			//hair
-			fill(84, 48, 10);
-			//arc(100,121,30,50,90,270);
-			arc(xPos,yPos+21,30,70,90,270);
-			//rect(100,97,50,10);
-			rect(xPos,yPos-3,50,10);
-			//arc(125,97,50,10,-180,0);
-			arc(xPos+25,yPos-5,50,40,-180,0);
-			arc(xPos + 50,yPos+21,30,70,90,270);
-			//bow
-			fill(255,0,0);
-			triangle(xPos+4,yPos-7,xPos-4,yPos-7,xPos,yPos);
-			triangle(xPos+4,yPos-7,xPos+12,yPos-7,xPos+8,yPos-14);
-			//head
-			noStroke();
-			fill(179, 118, 43);
-			quad(xPos,yPos,xPos + 50,yPos,xPos + 45,yPos + 40,xPos+ 5,yPos + 40);
-			//eyes
-			stroke(15, 2, 2);
-			fill(242, 234, 234);
-			//ellipse(115,115,6,10);
-			ellipse(xPos+15,yPos+15,6,10);
-			//ellipse(135,115,6,10);
-			ellipse(xPos+35,yPos+15,6,10);
-			//pupils
-			fill(5, 0, 0);
-			//ellipse(135,117.2,3,3);
-			ellipse(xPos+35,yPos+17.2,3,3);
-			//ellipse(115,117.2,3,3);
-			ellipse(xPos+15,yPos+17.2,3,3);
-			//nose
-			stroke(0,0,0);
-			strokeWeight(.1);
-			fill(158, 96, 19);
-			//arc(125,127,4,4,-110,130);
-			arc(xPos+25,yPos+27,4,4,-110,130);
-			//mouth
-			//line(120,133,130,133);
-			strokeWeight(1);
-			stroke(15,2,2);
-			line(xPos+20,yPos+33,xPos+30,yPos+33);
-			//torso
-			noStroke();
-			fill(13, 84, 13);
-			//quad(110,140,140,140,145,170,105,170);
-			quad(xPos+10,yPos+40,xPos+40,yPos+40,xPos+45,yPos+70,xPos+5,yPos+70);
-			//sleeves
-			//rect(140,140,10,10);
-			rect(xPos+40,yPos+40,10,10);
-			//rect(100,140,10,10);
-			rect(xPos,yPos+40,10,10);
-			//shorts
-			fill(36, 10, 140);
-			//rect(110,170,15,10);
-			rect(xPos+10,yPos+70,15,10);
-			//rect(127,170,15,10);
-			rect(xPos+27,yPos+70,15,10);
-			//shoes
-			fill(13, 15, 1);
-			//ellipse(137,180,20,7);
-			ellipse(xPos+37,yPos+80,20,7);
-			//ellipse(118,180,20,7);
-			ellipse(xPos+18,yPos+80,20,7);
-			//arms
-			fill(179, 118, 43);
-			//rect(150,142,10,6);
-			rect(xPos+50,yPos+42,10,6);
-			//rect(90,142,10,6);
-			rect(xPos-10,yPos+42,10,6);
-			
+		fill(255, 255, 255); 
+		rect(x, y, 50, 50); 
 	}
 	
 	void changeState(var k)
@@ -296,10 +178,10 @@ class Character
 	{ 
 		//println("JUMPING " + jumpState);
 		//jumping
-		if(jumpState == 1 && yPos >= height)
+		if(jumpState == 1 && y >= height)
 		{
-			yPos -= 70; 
-		} else if (yPos <= height)
+			y -= 70; 
+		} else if (y <= height)
 		{
 			jumpState = 2;
 		}
@@ -308,28 +190,26 @@ class Character
 		
 		//waitasec();
 		//falling
-		if(millis() - time >= 1470)
+		if(millis() - time >= 1400)
 		{
-			if(jumpState == 2 && yPos <= height)
+			if(jumpState == 2 && y <= height)
 			{
-				yPos = inity;
+				y = inity;
 				keyTouch = false; 
 			}
-			else if (yPos >= height)
+			else if (y >= height)
 			{
 				jumpState = 0;
 				
 			}
 		time = millis(); 
 		}
-	}
-	void drawMinus()
-	{
-		fill(255,0,0);
-		rect(600, 200, 80, 40);
-		fill(255,255,255);
-		text("YOU HIT A COIN!", 600, 200);
+		
+		
+		
 	
+		//println("UP" + y);
+		//this.drawCharacter();
 	}
 	void resetTime()
 	{
@@ -337,6 +217,25 @@ class Character
 	}
 		
 }
+
+	/*void waitasec()
+	{
+		var minutes = minute();
+	   var seconds = second();
+	   var hour = hour();
+	   var starttime = (hour * 3600) + (minutes * 60) + seconds;
+	   var finaltime = starttime + 3;
+
+	   while (starttime < finaltime) {
+
+		   minutes = minute();
+		   seconds = second();
+		   starttime = (hour * 3600) + (minutes * 60) + seconds;
+	   }
+	}*/
+
+
+//('#canvas').addEventListener("keypressed", jump, false);
 
 
 class Box 
@@ -663,32 +562,5 @@ if(keyTouch == false)
 	}
 }
 
-	if(keyCode == 32)//space key
-	{
-		gameState = 0;	
-		income = 90; 
-		costOfLiving = 90; 
-	}
-
 }
 
-void mouseClicked()
-{
-	gameState = 1; 
-	time = millis(); 
-	sceneTime = millis(); 
-	coinTime = millis(); 
-	
-
-}
-
-
-
-
-
-
-		</script>
-	<body>
-			<center><canvas id="mycanvas"></canvas></center> 
-	</body>
-</html>
