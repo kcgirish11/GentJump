@@ -1,0 +1,692 @@
+<html>
+<title> Gent Jump </title>
+
+		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+				<script type="text/processing" data-processing-target="mycanvas">
+			var road, chara, time, income, costOfLiving, sceneTime, keyTouch, coinTime, youLost, startGame, gameState, coneTouch; 
+			var townhouses = {};
+			var cones = {};
+			var condos = {};
+			var coins = {};
+
+
+	void setup()
+{
+	size(800,500); 
+	background(0, 102, 153);
+	startGame = false; 
+	income = 90; 
+	costOfLiving = 100; 
+	gameState = 0; 
+	time = millis();
+	sceneTime = millis();
+	coinTime = millis(); 
+	keyTouch = false; 
+	youLost = false; 
+	coneTouch = false; 
+	road = new Road(0, 450);
+	chara = new Character(60, 410);
+	var town = 0; 
+	for(var k = 0; k < 8; k++)
+	{
+		townhouses.push(new Townhouse(town, 75, -3, [random(220,255), random(0,100), random(0, 100)]));
+		town += 121; 
+		
+	}
+	var cone = 0; 
+	for(var l =0; l < 5; l++)
+	{
+		cones.push(new Cone(cone, 480, -2));
+		cone += 180;
+	}
+	var coin = 0; 
+	for(var p = 0; p < 3; p++)
+	{
+		coins.push(new Coin(coin, 380, -2));
+		coin += random(100, 200); 
+	}
+	var condo = 0; 
+	for(var m = 0; m < 3; m++)
+	{
+		condos.push(new Condo(condo, 165, -3));
+		condo += 300;
+	}
+	
+	
+}
+
+void draw()
+{
+	if(gameState === 0)
+	{
+		background(71,145,181);
+		var c = createFont("cursive");
+		fill(255,255,255);
+		textFont(c);
+		textSize(80);
+		text("GentJump", 215, 265);
+		textSize(30);
+		text("Click on Genny to START playing!", 170, 340);
+		chara.drawCharacter(); 
+	}
+	if(gameState === 1)
+	{
+		background(71,145,181);
+		 fill(255,255,0); 
+		ellipse(70,70,50,50);
+		for(var h = 0; h < townhouses.length; h++)
+		{
+			townhouses[h].drawTownhouse(); 
+			townhouses[h].moveTownhouse();
+		}
+		if(millis() - sceneTime >= 70000)
+		{
+			for(var i = 0; i < condos.length; i++)
+			{
+				condos[i].drawCondo(); 
+				condos[i].moveCondo(); 
+			}
+		}
+		road.drawRoad();
+		for(var p = 0; p < coins.length;p++)
+		{
+			coins[p].drawCoin(); 
+			coins[p].moveCoin();
+			if(Math.abs(coins[p].xPosition - chara.xPos <= 2) && (coins[p].yPosition-40) === chara.yPos)
+			{
+				coins.splice(p, 1);
+				income+= 4; 
+				
+			}
+		}
+		
+		if(millis() - sceneTime >= 10000)
+		{
+			for(var c = 0; c < cones.length; c++)
+			{
+				cones[c].drawCone();
+				cones[c].moveCone(); 
+				if(cones[c].xPosition - chara.xPos === 2 && (cones[c].yPosition-70) === chara.yPos)
+				{
+					income -= 3;
+					coneTouch = true;  
+					//println("CONE");
+					//println(cones.length);
+					//println("CONES  " + cones[c].yPosition);
+					
+				}
+			} 
+		}
+		if(coneTouch === true)
+		{
+			chara.drawMinus(); 
+		}
+		chara.drawCharacter();
+		chara.jump(); 
+		//println("Character Yposition  " + chara.y);
+		fill(255,255,255);
+		textFont("monospace", 25);
+		text("Income: " + income, 530, 30); 
+		text("Cost Of Living: " + costOfLiving, 530, 60);
+
+			if(millis() - time >= 2000)
+			{
+				costOfLiving += 3; 
+				if(coneTouch === true)
+				{
+					coneTouch = false;
+				}
+				time = millis(); 
+			}
+			
+			if(millis() - coinTime >= 4000)
+			{
+				coins.push(new Coin(random(800,850), 380, -2));
+				coinTime = millis(); 
+			}
+			if(income <= costOfLiving * (3/5))
+			{
+				///alert("YOUR INCOME DROPPED TOO MIUCH!!!! SORRY you have been DISPLACED!!!!");
+					background(181, 205, 23);
+					var c=createFont("cursive");
+					textFont(c);
+					textSize(55);
+					text("YOU LOST :'(",205,105,400,400);
+					textFont(c);
+					textSize(25);
+					text("You were unable to make",240,250);
+					text("enough money to keep up",240,280);
+					text("with the rising cost of",240,310);
+					text("living and were forced to",240,340);
+					text("leave your neighborhood.",240,370);
+					fill(47, 26, 204);
+					textSize(28);
+					text("Press SPACE to give Genny another chance!",200,440); 
+					chara.drawCharacter(); 
+			}
+				if(income > costOfLiving)
+				{
+					gameState = 2; 
+					
+				}
+		}
+		
+		if(gameState === 2)
+		{
+			background(181, 205, 23);
+			var c= createFont("cursive");
+			textFont(c,55);
+			fill(255,255,255);
+			text("YOU WIN!!", 255, 145); 
+			textFont(c, 20);
+			text("You reached an income greater than the ", 218, 210); 
+			text("cost of living, great job! But, remember to ", 200, 235); 
+			text("stay informed and help your neighbors! ", 218, 260);
+			fill(28, 28, 230);
+			textFont(c, 30);
+			text("Press SPACE to play again!",223, 407);
+			chara.drawCharacter(); 		
+		}
+}
+
+class Character 
+{
+	var xPos, yPos, jumpState, height, inity, time; 
+	Character(xps, yps)
+	{
+		xPos = xps; 
+		yPos = yps;
+		inity = yps; 
+		jumpState = 0; 
+		height = 390; 
+		time = millis(); 
+	}
+	
+	void drawCharacter()
+	{
+		noStroke();
+			//hair
+			fill(84, 48, 10);
+			//arc(100,121,30,50,90,270);
+			arc(xPos,yPos+21,30,70,90,270);
+			//rect(100,97,50,10);
+			rect(xPos,yPos-3,50,10);
+			//arc(125,97,50,10,-180,0);
+			arc(xPos+25,yPos-5,50,40,-180,0);
+			arc(xPos + 50,yPos+21,30,70,90,270);
+			//bow
+			fill(255,0,0);
+			triangle(xPos+4,yPos-7,xPos-4,yPos-7,xPos,yPos);
+			triangle(xPos+4,yPos-7,xPos+12,yPos-7,xPos+8,yPos-14);
+			//head
+			noStroke();
+			fill(179, 118, 43);
+			quad(xPos,yPos,xPos + 50,yPos,xPos + 45,yPos + 40,xPos+ 5,yPos + 40);
+			//eyes
+			stroke(15, 2, 2);
+			fill(242, 234, 234);
+			//ellipse(115,115,6,10);
+			ellipse(xPos+15,yPos+15,6,10);
+			//ellipse(135,115,6,10);
+			ellipse(xPos+35,yPos+15,6,10);
+			//pupils
+			fill(5, 0, 0);
+			//ellipse(135,117.2,3,3);
+			ellipse(xPos+35,yPos+17.2,3,3);
+			//ellipse(115,117.2,3,3);
+			ellipse(xPos+15,yPos+17.2,3,3);
+			//nose
+			stroke(0,0,0);
+			strokeWeight(.1);
+			fill(158, 96, 19);
+			//arc(125,127,4,4,-110,130);
+			arc(xPos+25,yPos+27,4,4,-110,130);
+			//mouth
+			//line(120,133,130,133);
+			strokeWeight(1);
+			stroke(15,2,2);
+			line(xPos+20,yPos+33,xPos+30,yPos+33);
+			//torso
+			noStroke();
+			fill(13, 84, 13);
+			//quad(110,140,140,140,145,170,105,170);
+			quad(xPos+10,yPos+40,xPos+40,yPos+40,xPos+45,yPos+70,xPos+5,yPos+70);
+			//sleeves
+			//rect(140,140,10,10);
+			rect(xPos+40,yPos+40,10,10);
+			//rect(100,140,10,10);
+			rect(xPos,yPos+40,10,10);
+			//shorts
+			fill(36, 10, 140);
+			//rect(110,170,15,10);
+			rect(xPos+10,yPos+70,15,10);
+			//rect(127,170,15,10);
+			rect(xPos+27,yPos+70,15,10);
+			//shoes
+			fill(13, 15, 1);
+			//ellipse(137,180,20,7);
+			ellipse(xPos+37,yPos+80,20,7);
+			//ellipse(118,180,20,7);
+			ellipse(xPos+18,yPos+80,20,7);
+			//arms
+			fill(179, 118, 43);
+			//rect(150,142,10,6);
+			rect(xPos+50,yPos+42,10,6);
+			//rect(90,142,10,6);
+			rect(xPos-10,yPos+42,10,6);
+			
+	}
+	
+	void changeState(var k)
+	{
+		jumpState = k;
+	}
+	
+	void jump()
+	{ 
+		//println("JUMPING " + jumpState);
+		//jumping
+		if(jumpState == 1 && yPos >= height)
+		{
+			yPos -= 70; 
+		} else if (yPos <= height)
+		{
+			jumpState = 2;
+		}
+		
+		//delay();
+		
+		//waitasec();
+		//falling
+		if(millis() - time >= 1470)
+		{
+			if(jumpState == 2 && yPos <= height)
+			{
+				yPos = inity;
+				keyTouch = false; 
+			}
+			else if (yPos >= height)
+			{
+				jumpState = 0;
+				
+			}
+		time = millis(); 
+		}
+	}
+	void drawMinus()
+	{
+		fill(255,0,0);
+		rect(600, 150, 104, 40);
+		fill(255,255,255);
+		text("YOU HIT A CONE!", 600, 170);
+	
+	}
+	void resetTime()
+	{
+		time = millis(); 
+	}
+		
+}
+
+
+class Box 
+		{
+			var xPosition;
+			var yPosition;
+			var speedX;
+				
+			Box(xPos, yPos, xSpeed)
+			{
+				xPosition = xPos;
+				yPosition = yPos;
+				speedX = xSpeed;
+			}
+			
+		void drawBox()
+			{
+				noStroke();
+				fill(230, 186, 76);
+				rect(xPosition+10,yPosition+310, 60,60); //the actual yellow box
+				//arrow for box
+				fill(18, 1, 1);
+				rect(xPosition+35,yPosition+340,10,30); //arrow's stick
+				triangle(xPosition+25,yPosition+350,xPosition+55,yPosition+350,xPosition+40,yPosition+330); //triangle of the arrow
+			}
+			
+			
+			void moveBox()
+			{
+				xPosition = xPosition + speedX;
+				
+				if(xPosition < -40)//when the house is off the screen
+				{
+				xPosition= 850;//move it to the right of the screen
+				}
+					
+			}
+		
+		
+		}
+		
+		class Townhouse 
+		{
+			var xPosition;
+			var yPosition;
+			var speedX;
+			var r;
+			var g;
+			var b;
+				
+			Townhouse(xPos, yPos, xSpeed,color)
+			{
+				xPosition = xPos;
+				yPosition = yPos;
+				speedX = xSpeed;
+				r= color[0];
+				g= color[1];
+				b= color[2];
+			}
+			
+		void drawTownhouse()
+			{
+				//line(-20, 376, 418, 376);
+				noStroke(); 
+
+				fill (r, g, b);
+				triangle(xPosition+26, yPosition+161, xPosition+147, yPosition+161, xPosition+87, yPosition+137); //triangle
+
+				fill (r, g, b);
+				rect(xPosition+26, yPosition+173, 121, 201); //red building
+
+				fill(77, 77, 77);
+				rect(xPosition+28, yPosition+163, 116, 7); //top
+
+
+				rect(xPosition+36, yPosition+181, 24, 40); //top left window
+
+				rect(xPosition+73, yPosition+181, 24, 40); //top middle window
+
+				
+				rect(xPosition+110, yPosition+181, 24, 40); //top right window
+
+		
+				rect(xPosition+36, yPosition+228, 24, 40); //middle left building
+
+				
+				rect(xPosition+73, yPosition+228, 24, 40); //middle middle window
+
+			
+				rect(xPosition+110, yPosition+228, 24, 40); // middle right window
+
+				
+				rect(xPosition+36, yPosition+275, 24, 40); //bottom left window
+
+				
+				rect(xPosition+73, yPosition+275, 24, 40); //bottom middle window
+
+				
+				rect(xPosition+110, yPosition+275, 24, 40); //bottom right window
+
+				
+				rect(xPosition+36, yPosition+323, 24, 40); //ground left window
+
+				
+				rect(xPosition+73, yPosition+323, 24, 40); //ground middle window
+
+				fill(44, 136, 138); 
+				rect(xPosition+108, yPosition+322, 29, 52); //door
+
+				fill(0, 0, 0);
+				ellipse(xPosition+113, yPosition+352, 2, 2); //door knob
+			}
+			
+			void moveTownhouse()
+			{
+				xPosition = xPosition + speedX;
+				
+				if(xPosition < -130)//when the house is off the screen
+				{
+				xPosition=850;//move it to the right of the screen
+				}
+					
+			}
+		}	
+		
+		class Car
+			{
+			var r;
+			var g;
+			var b;
+			var Xpos;
+			var Ypos;
+			var speedX;
+			Car(color,xp,yp,sp)
+			{
+				r= color[0];
+				g= color[1];
+				b= color[2];
+				Xpos= xp;
+				Ypos= yp;
+				speedX= sp;
+			}
+		
+			void drawCar()
+			{
+			noStroke();
+			fill(r,g,b);
+			rect(Xpos,Ypos,100,30);
+			arc(Xpos+50,Ypos-7,75,70,180,360);
+			fill(128,128,128);
+			ellipse(Xpos+20,Ypos+30,25,25);
+			ellipse(Xpos+80,Ypos+30,25,25);
+			}
+		
+			void moveCar()
+			{
+			Xpos = Xpos+ speedX;
+				if(Xpos < -130)
+				{
+				  Xpos = 880;
+				}
+			}
+		}
+		
+	class Coin 
+		{
+			var xPosition;
+			var yPosition;
+			var speedX;
+				
+			Coin(xPos, yPos, xSpeed)
+			{
+				xPosition = xPos;
+				yPosition = yPos;
+				speedX = xSpeed;
+			}
+			
+		void drawCoin()
+			{
+				//coins
+				stroke(222, 192, 40); //orange border
+				strokeWeight(2); //size of the orange border
+				fill(225, 255, 0);
+				ellipse(xPosition,yPosition,20,20); //yellow circle
+			}
+			
+			
+			void moveCoin()
+			{
+				xPosition = xPosition + speedX;
+				
+				if(xPosition < -10)//when the house is off the screen
+				{
+				xPosition= 850;//move it to the right of the screen
+				}
+					
+			}
+		
+		}
+		class Condo{
+			var xPos;
+			var yPpos;
+			var speedX;
+			Condo(xp,yp,sp)
+			{
+				xPos= xp;
+				yPos= yp;
+				speedX= sp;
+			}
+		
+			void drawCondo()
+			{
+				noStroke();
+				fill(204, 194, 194);
+				rect(xPos,yPos,175,300);//building
+				//fill(141, 138, 150);
+				//quad(xPos,yPos,xPos-10,yPos-20,xPos+185,yPos-20,xPos+175,yPos);//roof
+				//stroke(56, 64, 94);
+				//strokeWeight(2);
+				fill(119, 137, 156);
+				rect(xPos+20,yPos+20,50,40);//windows
+				rect(xPos+100,yPos+20,50,40);//windows
+				rect(xPos+20,yPos+80,50,40);//windows
+				rect(xPos+100,yPos+80,50,40);//windows
+				rect(xPos+20,yPos+140,50,40);//windows
+				rect(xPos+100,yPos+140,50,40);//windows
+				//stroke(91, 99, 117);
+				//strokeWeight(2);
+				rect(xPos+57.5,yPos+227,30,70);//doors
+				rect(xPos+90.5,yPos+227,30,70);//doors
+				//stroke(92, 173, 94);
+				//strokeWeight(1.75);
+				fill(32, 153, 36);
+				ellipse(xPos+30,yPos+285,45,45);//bush
+			}
+		
+			void moveCondo()
+			{
+			xPos = xPos+ speedX;
+				if(xPos < -170)
+				{
+				  xPos = 950;
+				}
+			}
+		}
+		
+		class Cone 
+		{
+			var xPosition;
+			var yPosition;
+			var speedX;
+				
+			Cone(xPos, yPos, xSpeed)
+			{
+				xPosition = xPos;
+				yPosition = yPos;
+				speedX = xSpeed;
+			}
+			
+		void drawCone()
+			{
+				fill(255, 102, 0);
+				triangle(xPosition,yPosition,xPosition+41,yPosition,xPosition+19,yPosition-45); //cone's triangle
+
+				stroke(232, 202, 111);//
+				strokeWeight(1.6); //yellow line's width
+
+				fill(196, 94, 4);
+				ellipse(xPosition+20,yPosition+4,50,13);//bottom of the cone
+
+				noStroke();
+			}
+			
+			
+			void moveCone()
+			{
+				xPosition = xPosition + speedX;
+				
+				if(xPosition < -100)//when the house is off the screen
+				{
+				xPosition=850;//move it to the right of the screen
+				}
+					
+			}
+		
+		
+		}
+
+	class Road
+	{
+
+		var xpos, ypos; 
+		Road(x, y)
+		{
+			xpos = x; 
+			ypos = y; 
+		}
+
+		void drawRoad()
+		{
+
+			fill(0, 0, 0); 
+			rect(xpos, ypos, 800, 100); 
+			fill(255,255,0); 
+			for(var i = 30; i < 850; i+=100)
+			{
+				rect(i, ypos + 20 , 50, 10); 
+
+			}
+		}
+	}
+				
+	
+void keyPressed()
+{
+if(keyTouch == false)
+{
+	if(keyCode == 38)//up key
+	{
+		keyTouch = true; 
+		chara.changeState(1); 
+		chara.resetTime();
+		//println("UP PRESSED");
+	}
+}
+
+	if(keyCode == 32)//space key
+	{
+		gameState = 0;	
+		income = 90; 
+		costOfLiving = 100; 
+		coneTouch = false; 
+		coins = {};
+		var coin = 0; 
+		for(var p = 0; p < 3; p++)
+		{
+			coins.push(new Coin(coin, 380, -2));
+			coin += random(100, 200); 
+		}
+	}
+
+}
+
+void mouseClicked()
+{
+	gameState = 1; 
+	time = millis(); 
+	sceneTime = millis(); 
+	coinTime = millis(); 
+	
+
+}
+
+
+
+
+
+
+		</script>
+	<body>
+			<center><canvas id="mycanvas"></canvas></center> 
+	</body>
+</html>
